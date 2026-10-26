@@ -1,0 +1,38 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+model Trainer {
+  id         String    @id @default(uuid())
+  name       String
+  level      Int       @default(1)
+  experience Int       @default(0)
+  pokemons   Pokemon[]
+}
+
+model Pokemon {
+  id        String   @id @default(uuid())
+  name      String
+  lifePoint Int
+  maxLife   Int
+  trainerId String?
+  trainer   Trainer? @relation(fields: [trainerId], references: [id], onDelete: SetNull)
+  attacks   Attack[]
+}
+
+model Attack {
+  id         String   @id @default(uuid())
+  name       String
+  damage     Int
+  usageLimit Int
+  usageCount Int      @default(0)
+  pokemonId  String?
+  pokemon    Pokemon? @relation(fields: [pokemonId], references: [id], onDelete: SetNull)
+
+  @@unique([pokemonId, name])
+}
